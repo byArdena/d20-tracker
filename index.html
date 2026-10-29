@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Счётчик d20</title>
+  
+  <!-- Подключаем Telegram WebApp -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  
+  <!-- Подключаем наши стили -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <button class="help-btn" id="btn-help">❓ Как это работает (и что такое хи-квадрат)</button>
+    <h1>🎲 Счётчик d20</h1>
+
+    <div class="panel">
+      <div class="grid" id="dice"></div>
+    </div>
+
+    <div class="panel">
+      <div class="stat-row">
+        <div class="stat-box">Всего: <b id="total">0</b></div>
+        <div class="stat-box">Среднее: <b id="avg">0</b></div>
+        <div class="stat-box">1 (провал): <b id="ones" class="red">0</b></div>
+        <div class="stat-box">20 (успех): <b id="twenties" class="green">0</b></div>
+        <div class="stat-box">χ²: <b id="chi">0</b></div>
+      </div>
+      <div class="btnrow">
+        <button class="undo" id="undo">↶ Отменить</button>
+        <button class="reset" id="reset">🗑 Очистить</button>
+      </div>
+    </div>
+
+    <div id="analysis-block" style="display:none;">
+      <div id="verdict" class="verdict-box"></div>
+      <div class="explain" id="explain-text"></div>
+    </div>
+
+    <div class="panel table-wrap">
+      <table>
+        <thead>
+          <tr><th>Знач.</th><th>Кол-во</th><th>%</th><th>Теор.</th><th>График</th></tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+
+    <div class="panel">
+      <h2>💾 Мои сессии</h2>
+      <div class="save-row">
+        <input type="text" id="session-name" placeholder="Название (напр: Красный кубик)">
+        <button id="btn-save">Сохранить</button>
+      </div>
+      <ul class="sessions-list" id="sessions-list"></ul>
+    </div>
+  </div>
+
+  <!-- Модальное окно с помощью -->
+  <div id="help-modal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" id="close-help">&times;</span>
+      <h3>📖 Руководство</h3>
+      <p>Программа помогает проверить, насколько честный у тебя игральный кубик. Ты бросаешь настоящий кубик, а программа записывает результаты и проводит анализ.</p>
+
+      <h4>🎲 1. Как вносить броски</h4>
+      <p>Просто нажимай на кнопки с цифрами от 1 до 20 после каждого реального броска. Программа автоматически посчитает статистику.</p>
+
+      <h4>📊 2. Что такое «Хи-квадрат» (χ²)?</h4>
+      <p>Хи-квадрат — главный статистический тест для проверки честности кубиков. Он сравнивает то, что <b>выпало</b>, с тем, что <b>должно было выпасть</b>.</p>
+      <p>У идеального d20 каждое число должно выпадать в <b>5% случаев</b> (1 из 20). Чем сильнее реальные результаты отличаются от 5%, тем больше будет число хи-квадрата.</p>
+      <div class="formula">χ² = Σ ( (Наблюдаемое − Ожидаемое)² / Ожидаемое )</div>
+      <p>Где:</p>
+      <ul>
+        <li><b>Наблюдаемое</b> — сколько раз выпало число.</li>
+        <li><b>Ожидаемое</b> — сколько раз оно должно было выпасть (Всего бросков / 20).</li>
+        <li><b>Σ</b> — знак суммы (программа считает для всех 20 граней и складывает).</li>
+      </ul>
+
+      <h4>🚦 3. Как читать вердикт?</h4>
+      <ul>
+        <li><span style="color:#7bff9e">✅ χ² меньше 30.14</span> — <b>Кубик честный.</b> Это нормальный случайный шум.</li>
+        <li><span style="color:#ffe6a3">⚠️ χ² от 30.14 до 36.19</span> — <b>Подозрительно.</b> Стоит сделать еще сотню бросков.</li>
+        <li><span style="color:#ff7b7b">🚨 χ² больше 36.19</span> — <b>Кубик смещен.</b> Вероятность честности менее 1%. Есть дефект.</li>
+      </ul>
+
+      <h4>🍀 «Везучий» кубик</h4>
+      <p>Иногда общий χ² показывает честность, но «двадцатка» выпадает сильно чаще «единицы». Программа ставит вердикт <b>«везучий»</b>. Это не брак — просто на этой выборке тебе фартит на криты!</p>
+
+      <h4>💾 4. Сохранения</h4>
+      <p>Внизу можно сохранить текущую историю, дав ей название. Позже можно загрузить её обратно. История сохраняется в браузере телефона и не пропадет.</p>
+    </div>
+  </div>
+
+  <!-- Подключаем наш скрипт -->
+  <script src="script.js"></script>
+</body>
+</html>
